@@ -200,7 +200,7 @@ const Home: NextPage = () => {
                 aria-label="copy"
                 icon={<CopyIcon />}
                 disabled={!showHtml}
-                onClick={() => copyToClipboard(cleanHtml)}
+                onClick={() => copyToClipboard(formattedHtml)}
               />
             </Flex>
           </Flex>

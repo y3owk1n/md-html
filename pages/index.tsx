@@ -50,6 +50,7 @@ const Home: NextPage = () => {
     setCleanHtml(
       DOMPurify.sanitize(dirtyHtml, {
         USE_PROFILES: { html: true },
+        ADD_ATTR: ["target"],
       })
     );
 
@@ -58,6 +59,7 @@ const Home: NextPage = () => {
     setFormattedHtml(
       DOMPurify.sanitize(dirtyFormattedHtml, {
         USE_PROFILES: { html: true },
+        ADD_ATTR: ["target"],
       })
     );
 
@@ -89,8 +91,6 @@ const Home: NextPage = () => {
             remarkPlugins={[remarkGfm]}
             className="markdown"
             components={{
-              // Map `h1` (`# heading`) to use `h2`s.
-              // Rewrite `em`s (`*like so*`) to `i` with a red foreground color.
               a: ({ href, ...props }) => (
                 <Link color="blue.500" href={href} isExternal {...props} />
               ),
@@ -101,7 +101,7 @@ const Home: NextPage = () => {
                 <Heading as={"h2"} size="lg" {...props} />
               ),
               h3: ({ level, ...props }) => (
-                <Heading as={"h2"} size="md" {...props} />
+                <Heading as={"h3"} size="md" {...props} />
               ),
               p: ({ ...props }) => <Text {...props} my={2} />,
               li: ({ ...props }) => <ListItem {...props} />,
@@ -119,6 +119,7 @@ const Home: NextPage = () => {
               img: ({ src, title, alt, ...props }) => (
                 <Image alt={alt} src={src} title={title} {...props} my={2} />
               ),
+              hr: ({ ...props }) => <Divider my={4} {...props} />,
             }}
           >
             {value as string}
@@ -129,10 +130,13 @@ const Home: NextPage = () => {
             remarkPlugins={[remarkGfm]}
             className="html"
             components={{
-              // Map `h1` (`# heading`) to use `h2`s.
-              // Rewrite `em`s (`*like so*`) to `i` with a red foreground color.
               a: ({ href, ...props }) => (
-                <a href={href} target="_blank" rel="noreferrer" {...props} />
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  {...props}
+                />
               ),
             }}
           >
@@ -148,7 +152,7 @@ const Home: NextPage = () => {
         gridGap={5}
         overflowY={"auto"}
       >
-        <Box colSpan={{ base: 1, md: 2 }} rowSpan={{ base: 2, md: 1 }}>
+        <Box>
           <Textarea
             value={value}
             onChange={handleChange}
@@ -157,17 +161,10 @@ const Home: NextPage = () => {
             shadow="md"
             p={5}
             resize={"none"}
+            border={"none"}
           />
         </Box>
-        <Box
-          bg="white"
-          shadow="md"
-          rounded="md"
-          p={5}
-          overflowY="auto"
-          colSpan={{ base: 1, md: 2 }}
-          rowSpan={{ base: 2, md: 1 }}
-        >
+        <Box bg="white" shadow="md" rounded="md" p={5} overflowY="auto">
           <Flex justifyContent="space-between">
             <Heading>Results:</Heading>
             <Flex>
@@ -190,13 +187,15 @@ const Home: NextPage = () => {
             </Flex>
           </Flex>
           <Divider my={2} />
-          {showHtml ? (
-            <SyntaxHighlighter language="html">
-              {formattedHtml}
-            </SyntaxHighlighter>
-          ) : (
-            parse(cleanHtml)
-          )}
+          <Box>
+            {showHtml ? (
+              <SyntaxHighlighter wrapLines wrapLongLines language="html">
+                {formattedHtml}
+              </SyntaxHighlighter>
+            ) : (
+              parse(cleanHtml)
+            )}
+          </Box>
         </Box>
       </Grid>
     </Box>

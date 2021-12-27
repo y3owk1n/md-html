@@ -61,6 +61,7 @@ const Home: NextPage = () => {
       document.querySelector(".markdown")?.innerHTML.toString() || "";
     setCleanHtml(
       DOMPurify.sanitize(dirtyHtml, {
+        USE_PROFILES: { html: true },
         ADD_ATTR: ["target"],
       })
     );
@@ -69,6 +70,7 @@ const Home: NextPage = () => {
       document.querySelector(".html")?.innerHTML.toString() || "";
     setFormattedHtml(
       DOMPurify.sanitize(dirtyFormattedHtml, {
+        USE_PROFILES: { html: true },
         ADD_ATTR: ["target"],
       })
     );

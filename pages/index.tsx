@@ -12,8 +12,14 @@ import {
   Link,
   ListItem,
   OrderedList,
+  Table,
+  Tbody,
+  Td,
   Text,
   Textarea,
+  Th,
+  Thead,
+  Tr,
   UnorderedList,
   useToast,
   VisuallyHidden,
@@ -26,10 +32,16 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
 
+const md = `
+Type in **markdown** and copy in html ->
+
+---
+
+🙃
+`;
+
 const Home: NextPage = () => {
-  const [value, setValue] = useState<string | undefined>(
-    "Type something **here** to start!"
-  );
+  const [value, setValue] = useState<string | undefined>(md);
 
   const [cleanHtml, setCleanHtml] = useState("");
 
@@ -49,7 +61,6 @@ const Home: NextPage = () => {
       document.querySelector(".markdown")?.innerHTML.toString() || "";
     setCleanHtml(
       DOMPurify.sanitize(dirtyHtml, {
-        USE_PROFILES: { html: true },
         ADD_ATTR: ["target"],
       })
     );
@@ -58,7 +69,6 @@ const Home: NextPage = () => {
       document.querySelector(".html")?.innerHTML.toString() || "";
     setFormattedHtml(
       DOMPurify.sanitize(dirtyFormattedHtml, {
-        USE_PROFILES: { html: true },
         ADD_ATTR: ["target"],
       })
     );
@@ -95,18 +105,18 @@ const Home: NextPage = () => {
                 <Link color="blue.500" href={href} isExternal {...props} />
               ),
               h1: ({ level, ...props }) => (
-                <Heading as={"h1"} size="xl" {...props} />
+                <Heading as={"h1"} size="xl" {...props} my={2} />
               ),
               h2: ({ level, ...props }) => (
-                <Heading as={"h2"} size="lg" {...props} />
+                <Heading as={"h2"} size="lg" {...props} my={2} />
               ),
               h3: ({ level, ...props }) => (
-                <Heading as={"h3"} size="md" {...props} />
+                <Heading as={"h3"} size="md" {...props} my={2} />
               ),
               p: ({ ...props }) => <Text {...props} my={2} />,
               li: ({ ...props }) => <ListItem {...props} />,
-              ol: ({ ...props }) => <OrderedList {...props} />,
-              ul: ({ ...props }) => <UnorderedList {...props} />,
+              ol: ({ ...props }) => <OrderedList {...props} my={2} />,
+              ul: ({ ...props }) => <UnorderedList {...props} my={2} />,
               code: ({ inline, ...props }) => (
                 <Code
                   {...props}
@@ -120,6 +130,12 @@ const Home: NextPage = () => {
                 <Image alt={alt} src={src} title={title} {...props} my={2} />
               ),
               hr: ({ ...props }) => <Divider my={4} {...props} />,
+              table: ({ ...props }) => <Table {...props} />,
+              tbody: ({ ...props }) => <Tbody {...props} />,
+              td: ({ ...props }: any) => <Td {...props} />,
+              th: ({ ...props }: any) => <Th {...props} />,
+              thead: ({ ...props }) => <Thead {...props} />,
+              tr: ({ ...props }) => <Tr {...props} />,
             }}
           >
             {value as string}

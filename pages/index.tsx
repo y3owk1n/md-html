@@ -51,6 +51,8 @@ const Home: NextPage = () => {
 
   const [showHtml, setShowHtml] = useState(false);
 
+  const [noListStyle, setNoListStyle] = useState(true);
+
   const toast = useToast();
 
   useEffect(() => {
@@ -82,7 +84,7 @@ const Home: NextPage = () => {
       setCleanHtml("");
       setFormattedHtml("");
     };
-  }, [value]);
+  }, [value, noListStyle]);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
@@ -121,8 +123,22 @@ const Home: NextPage = () => {
               ),
               p: ({ ...props }) => <Text {...props} my={2} />,
               li: ({ ...props }) => <ListItem {...props} />,
-              ol: ({ ...props }) => <OrderedList {...props} my={2} />,
-              ul: ({ ...props }) => <UnorderedList {...props} my={2} />,
+              ol: ({ ...props }) => (
+                <OrderedList
+                  listStyleType={noListStyle ? "none" : undefined}
+                  marginLeft={noListStyle ? 0 : undefined}
+                  {...props}
+                  my={2}
+                />
+              ),
+              ul: ({ ...props }) => (
+                <UnorderedList
+                  listStyleType={noListStyle ? "none" : undefined}
+                  marginLeft={noListStyle ? 0 : undefined}
+                  {...props}
+                  my={2}
+                />
+              ),
               code: ({ inline, ...props }) => (
                 <Code
                   {...props}
@@ -157,6 +173,26 @@ const Home: NextPage = () => {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  {...props}
+                />
+              ),
+              ul: ({ ...props }) => (
+                <ul
+                  style={
+                    noListStyle
+                      ? { listStyle: "none", marginLeft: 0 }
+                      : undefined
+                  }
+                  {...props}
+                />
+              ),
+              ol: ({ ...props }) => (
+                <ul
+                  style={
+                    noListStyle
+                      ? { listStyle: "none", marginLeft: 0 }
+                      : undefined
+                  }
                   {...props}
                 />
               ),
@@ -197,6 +233,14 @@ const Home: NextPage = () => {
                 mr={2}
               >
                 {showHtml ? "View Actual" : "View Html"}
+              </Button>
+              <Button
+                variant={"outline"}
+                colorScheme={"blue"}
+                onClick={() => setNoListStyle(!noListStyle)}
+                mr={2}
+              >
+                {noListStyle ? "Show Bullet" : "No Bullet"}
               </Button>
               <IconButton
                 variant="outline"

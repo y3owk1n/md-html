@@ -51,7 +51,7 @@ const Home: NextPage = () => {
 
   const [showHtml, setShowHtml] = useState(false);
 
-  const [noListStyle, setNoListStyle] = useState(true);
+  const [noListStyle, setNoListStyle] = useState(false);
 
   const toast = useToast();
 

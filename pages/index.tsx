@@ -41,7 +41,9 @@ Type in **markdown** and copy in html ->
 `;
 
 const Home: NextPage = () => {
-  const [value, setValue] = useState<string | undefined>(md);
+  const [value, setValue] = useState<string | undefined>(
+    typeof window !== "undefined" ? (localStorage.getItem("md") as string) : md
+  );
 
   const [cleanHtml, setCleanHtml] = useState("");
 
@@ -83,6 +85,7 @@ const Home: NextPage = () => {
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
+    localStorage.setItem("md", e.target.value);
   };
 
   const copyToClipboard = (html: string) => {

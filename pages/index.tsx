@@ -42,7 +42,7 @@ Type in **markdown** and copy in html ->
 
 const Home: NextPage = () => {
   const [value, setValue] = useState<string | undefined>(
-    typeof window !== "undefined" ? (localStorage.getItem("md") as string) : md
+    typeof window !== "undefined" ? localStorage.getItem("md") ?? md : md
   );
 
   const [cleanHtml, setCleanHtml] = useState("");

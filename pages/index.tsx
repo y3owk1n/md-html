@@ -1,4 +1,4 @@
-import { CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon, QuestionIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -11,6 +11,13 @@ import {
   Image,
   Link,
   ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   OrderedList,
   Table,
   Tbody,
@@ -21,6 +28,7 @@ import {
   Thead,
   Tr,
   UnorderedList,
+  useDisclosure,
   useToast,
   VisuallyHidden,
 } from "@chakra-ui/react";
@@ -52,6 +60,8 @@ const Home: NextPage = () => {
   const [showHtml, setShowHtml] = useState(false);
 
   const [noListStyle, setNoListStyle] = useState(false);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
 
@@ -232,7 +242,7 @@ const Home: NextPage = () => {
                 onClick={() => setShowHtml(!showHtml)}
                 mr={2}
               >
-                {showHtml ? "View Actual" : "View Html"}
+                {showHtml ? "Live" : "Code"}
               </Button>
               <Button
                 variant={"outline"}
@@ -245,10 +255,18 @@ const Home: NextPage = () => {
               <IconButton
                 variant="outline"
                 colorScheme={"blue"}
+                mr={2}
                 aria-label="copy"
                 icon={<CopyIcon />}
                 disabled={!showHtml}
                 onClick={() => copyToClipboard(formattedHtml)}
+              />
+              <IconButton
+                variant="outline"
+                colorScheme={"blue"}
+                aria-label="help"
+                icon={<QuestionIcon />}
+                onClick={onOpen}
               />
             </Flex>
           </Flex>
@@ -264,6 +282,144 @@ const Home: NextPage = () => {
           </Box>
         </Box>
       </Grid>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        scrollBehavior="inside"
+        size="xl"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Helper</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Elements</Th>
+                  <Th>Markdown Syntax</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td verticalAlign={"top"}>Heading</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        # H1
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        ## H2
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        ### H3
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Bold</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        **bold text**
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Italic</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        *italic text*
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Strikethrough</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        ~strikethrough~
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Ordered List</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        1. First item
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        2. Second item
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        3. Third item
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Unordered List</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        - First item
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        - Second item
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        - Third item
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Horizontal Rule</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        ---
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Link</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        [title](https://www.example.com)
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>Image</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        ![alt text](image.jpg)
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

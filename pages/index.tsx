@@ -1,5 +1,7 @@
 import { CopyIcon, QuestionIcon } from "@chakra-ui/icons";
 import {
+  AspectRatio,
+  Badge,
   Box,
   Button,
   Code,
@@ -38,14 +40,24 @@ import type { NextPage } from "next";
 import { ChangeEvent, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import remarkDirective from "remark-directive";
+import remarkDirectiveRehype from "remark-directive-rehype";
+import emoji from "remark-emoji";
 import remarkGfm from "remark-gfm";
 
 const md = `
-Type in **markdown** and copy in html ->
+# New Feature
 
----
+## Youtube Video
 
-🙃
+::youtube-video[Video Name]{#uNQXjvZJM7E}
+
+## Emojis
+
+- :point_up: 
+- :wink: 
+- :) 
+- :( 
 `;
 
 const Home: NextPage = () => {
@@ -77,7 +89,17 @@ const Home: NextPage = () => {
     setCleanHtml(
       DOMPurify.sanitize(dirtyHtml, {
         USE_PROFILES: { html: true },
-        ADD_ATTR: ["target"],
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: [
+          "target",
+          "allow",
+          "allowfullscreen",
+          "frameborder",
+          "scrolling",
+          "title",
+          "aria-hidden",
+          "srcDoc",
+        ],
       })
     );
 
@@ -86,7 +108,17 @@ const Home: NextPage = () => {
     setFormattedHtml(
       DOMPurify.sanitize(dirtyFormattedHtml, {
         USE_PROFILES: { html: true },
-        ADD_ATTR: ["target"],
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: [
+          "target",
+          "allow",
+          "allowfullscreen",
+          "frameborder",
+          "scrolling",
+          "title",
+          "aria-hidden",
+          "srcDoc",
+        ],
       })
     );
 
@@ -95,6 +127,117 @@ const Home: NextPage = () => {
       setFormattedHtml("");
     };
   }, [value, noListStyle]);
+
+  const markDownComponent: any = {
+    a: ({ ...props }) => (
+      <Link color="blue.500" href={props.href} isExternal {...props} />
+    ),
+    h1: ({ ...props }) => <Heading as={"h1"} size="xl" {...props} my={2} />,
+    h2: ({ ...props }) => <Heading as={"h2"} size="lg" {...props} my={2} />,
+    h3: ({ ...props }) => <Heading as={"h3"} size="md" {...props} my={2} />,
+    p: ({ ...props }) => <Text {...props} my={2} />,
+    li: ({ ...props }) => <ListItem {...props} />,
+    ol: ({ ...props }) => (
+      <OrderedList
+        listStyleType={noListStyle ? "none" : undefined}
+        marginLeft={noListStyle ? 0 : undefined}
+        {...props}
+        my={2}
+      />
+    ),
+    ul: ({ ...props }) => (
+      <UnorderedList
+        listStyleType={noListStyle ? "none" : undefined}
+        marginLeft={noListStyle ? 0 : undefined}
+        {...props}
+        my={2}
+      />
+    ),
+    code: ({ ...props }) => (
+      <Code
+        {...props}
+        w={props.inline ? "unset" : "full"}
+        py={props.inline ? 0 : 2}
+        px={1}
+        colorScheme={"red"}
+      />
+    ),
+    img: ({ ...props }) => (
+      <Image
+        alt={props.alt}
+        src={props.src}
+        title={props.title}
+        {...props}
+        my={2}
+      />
+    ),
+    hr: ({ ...props }) => <Divider my={4} {...props} />,
+    table: ({ ...props }) => <Table {...props} />,
+    tbody: ({ ...props }) => <Tbody {...props} />,
+    td: ({ ...props }: any) => <Td {...props} />,
+    th: ({ ...props }: any) => <Th {...props} />,
+    thead: ({ ...props }) => <Thead {...props} />,
+    tr: ({ ...props }) => <Tr {...props} />,
+    "youtube-video": ({ ...props }) => (
+      <AspectRatio ratio={16 / 9}>
+        <Box
+          as={"iframe"}
+          src={"https://www.youtube.com/embed/" + props.id}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          title={props.children}
+          aria-hidden="true"
+          frameBorder="0"
+          allowFullScreen
+          srcDoc={`<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/${props.id}/?autoplay=1><img src=https://img.youtube.com/vi/${props.id}/hqdefault.jpg alt='${props.children}'><span>▶</span></a>`}
+        />
+      </AspectRatio>
+    ),
+  };
+
+  const htmlComponent: any = {
+    a: ({ ...props }) => (
+      <a
+        href={props.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      />
+    ),
+    ul: ({ ...props }) => (
+      <ul
+        style={noListStyle ? { listStyle: "none", marginLeft: 0 } : undefined}
+        {...props}
+      />
+    ),
+    ol: ({ ...props }) => (
+      <ul
+        style={noListStyle ? { listStyle: "none", marginLeft: 0 } : undefined}
+        {...props}
+      />
+    ),
+    "youtube-video": ({ ...props }) => (
+      <div
+        style={{ position: "relative", width: "100%", paddingBottom: "56.25%" }}
+      >
+        <iframe
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            border: 0,
+          }}
+          title={props.children}
+          src={"https://www.youtube.com/embed/" + props.id}
+          frameBorder="0"
+          allowFullScreen
+          aria-hidden="true"
+          srcDoc={`<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/${props.id}/?autoplay=1><img src=https://img.youtube.com/vi/${props.id}/hqdefault.jpg alt='${props.children}'><span>▶</span></a>`}
+        />
+      </div>
+    ),
+  };
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
@@ -116,97 +259,28 @@ const Home: NextPage = () => {
       <VisuallyHidden>
         <Box>
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={[
+              remarkGfm,
+              [emoji, { emoticon: true, padSpaceAfter: true }],
+              remarkDirectiveRehype,
+              remarkDirective,
+            ]}
             className="markdown"
-            components={{
-              a: ({ href, ...props }) => (
-                <Link color="blue.500" href={href} isExternal {...props} />
-              ),
-              h1: ({ level, ...props }) => (
-                <Heading as={"h1"} size="xl" {...props} my={2} />
-              ),
-              h2: ({ level, ...props }) => (
-                <Heading as={"h2"} size="lg" {...props} my={2} />
-              ),
-              h3: ({ level, ...props }) => (
-                <Heading as={"h3"} size="md" {...props} my={2} />
-              ),
-              p: ({ ...props }) => <Text {...props} my={2} />,
-              li: ({ ...props }) => <ListItem {...props} />,
-              ol: ({ ...props }) => (
-                <OrderedList
-                  listStyleType={noListStyle ? "none" : undefined}
-                  marginLeft={noListStyle ? 0 : undefined}
-                  {...props}
-                  my={2}
-                />
-              ),
-              ul: ({ ...props }) => (
-                <UnorderedList
-                  listStyleType={noListStyle ? "none" : undefined}
-                  marginLeft={noListStyle ? 0 : undefined}
-                  {...props}
-                  my={2}
-                />
-              ),
-              code: ({ inline, ...props }) => (
-                <Code
-                  {...props}
-                  w={inline ? "unset" : "full"}
-                  py={inline ? 0 : 2}
-                  px={1}
-                  colorScheme={"red"}
-                />
-              ),
-              img: ({ src, title, alt, ...props }) => (
-                <Image alt={alt} src={src} title={title} {...props} my={2} />
-              ),
-              hr: ({ ...props }) => <Divider my={4} {...props} />,
-              table: ({ ...props }) => <Table {...props} />,
-              tbody: ({ ...props }) => <Tbody {...props} />,
-              td: ({ ...props }: any) => <Td {...props} />,
-              th: ({ ...props }: any) => <Th {...props} />,
-              thead: ({ ...props }) => <Thead {...props} />,
-              tr: ({ ...props }) => <Tr {...props} />,
-            }}
+            components={markDownComponent}
           >
             {value as string}
           </ReactMarkdown>
         </Box>
         <Box>
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={[
+              remarkGfm,
+              [emoji, { emoticon: true, padSpaceAfter: true }],
+              remarkDirectiveRehype,
+              remarkDirective,
+            ]}
             className="html"
-            components={{
-              a: ({ href, ...props }) => (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  {...props}
-                />
-              ),
-              ul: ({ ...props }) => (
-                <ul
-                  style={
-                    noListStyle
-                      ? { listStyle: "none", marginLeft: 0 }
-                      : undefined
-                  }
-                  {...props}
-                />
-              ),
-              ol: ({ ...props }) => (
-                <ul
-                  style={
-                    noListStyle
-                      ? { listStyle: "none", marginLeft: 0 }
-                      : undefined
-                  }
-                  {...props}
-                />
-              ),
-            }}
+            components={htmlComponent}
           >
             {value as string}
           </ReactMarkdown>
@@ -250,7 +324,7 @@ const Home: NextPage = () => {
                 onClick={() => setNoListStyle(!noListStyle)}
                 mr={2}
               >
-                {noListStyle ? "Show Bullet" : "No Bullet"}
+                {noListStyle ? "✅ ∙" : "❎ ∙"}
               </Button>
               <IconButton
                 variant="outline"
@@ -405,6 +479,39 @@ const Home: NextPage = () => {
                     <Flex flexDir={"column"} experimental_spaceY={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         ![alt text](image.jpg)
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>
+                    YouTube Video <Badge colorScheme={"blue"}>New</Badge>
+                  </Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        {"::youtube-video[Name]{#ID}"}
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td verticalAlign={"top"}>
+                    Emoji <Badge colorScheme={"blue"}>New</Badge>
+                  </Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        :wink:
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        :(
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        :-)
+                      </Code>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        :point_up:
                       </Code>
                     </Flex>
                   </Td>

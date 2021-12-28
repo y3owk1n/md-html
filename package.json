@@ -12,7 +12,6 @@
     "@chakra-ui/react": "^1.7.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
-    "@uiw/react-md-editor": "3.6.0",
     "dompurify": "^2.3.4",
     "framer-motion": "^5",
     "html-react-parser": "^1.4.4",
@@ -20,9 +19,13 @@
     "next-remove-imports": "^1.0.6",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-html": "^2.1.0",
     "react-markdown": "^7.1.1",
     "react-syntax-highlighter": "^15.4.5",
     "rehype-raw": "^6.1.0",
+    "remark-directive": "^2.0.1",
+    "remark-directive-rehype": "^0.4.0",
+    "remark-emoji": "^3.0.2",
     "remark-gfm": "^3.0.1"
   },
   "devDependencies": {

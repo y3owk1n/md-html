@@ -57,6 +57,7 @@ const Home: NextPage = () => {
     if (!value) {
       setCleanHtml("");
       setFormattedHtml("");
+      localStorage.removeItem("md");
     }
 
     const dirtyHtml =

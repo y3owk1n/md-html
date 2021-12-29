@@ -261,7 +261,7 @@ const Home: NextPage = () => {
           <ReactMarkdown
             remarkPlugins={[
               remarkGfm,
-              [emoji, { emoticon: true, padSpaceAfter: true }],
+              [emoji, { padSpaceAfter: true }],
               remarkDirectiveRehype,
               remarkDirective,
             ]}
@@ -275,7 +275,7 @@ const Home: NextPage = () => {
           <ReactMarkdown
             remarkPlugins={[
               remarkGfm,
-              [emoji, { emoticon: true, padSpaceAfter: true }],
+              [emoji, { padSpaceAfter: true }],
               remarkDirectiveRehype,
               remarkDirective,
             ]}
@@ -505,10 +505,10 @@ const Home: NextPage = () => {
                         :wink:
                       </Code>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
-                        :(
+                        :dog:
                       </Code>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
-                        :-)
+                        :+1
                       </Code>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         :point_up:

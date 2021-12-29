@@ -1,4 +1,4 @@
-import { CopyIcon, QuestionIcon } from "@chakra-ui/icons";
+import { CopyIcon, DeleteIcon, QuestionIcon } from "@chakra-ui/icons";
 import {
   AspectRatio,
   Badge,
@@ -28,46 +28,67 @@ import {
   Textarea,
   Th,
   Thead,
+  Tooltip,
   Tr,
   UnorderedList,
   useDisclosure,
   useToast,
-  VisuallyHidden,
 } from "@chakra-ui/react";
 import DOMPurify from "dompurify";
-import parse from "html-react-parser";
 import type { NextPage } from "next";
+import Head from "next/head";
 import { ChangeEvent, useEffect, useState } from "react";
+import { renderToString } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkDirective from "remark-directive";
-import remarkDirectiveRehype from "remark-directive-rehype";
 import emoji from "remark-emoji";
 import remarkGfm from "remark-gfm";
+import { visit } from "unist-util-visit";
 
-const md = `
-# New Feature
+const md = `### This markdown editor is very opinionated and basically created for my own workflow... use it or leave it :smile:
 
-## Youtube Video
+---
 
-::youtube-video[Video Name]{#uNQXjvZJM7E}
+1. Automatically adding \`target="_blank"\` for all links.
+2. Only support youtube directive as an iframe (e.g.: \`::youtube[video name]{#ID}\`).
+3. Ability to \`remove the list-styles\` on ordered and unordered list for my own usage.
+4. Main core of this project is to offer a live preview and copy clean copy of generated htmls to another html editor.
+5. Contents will be temporarily saved under localstorage for some degree of conveniency.`;
 
-## Emojis
+function myRemarkPlugin() {
+  return (tree: any, file: any) => {
+    visit(tree, (node) => {
+      if (
+        node.type === "textDirective" ||
+        node.type === "leafDirective" ||
+        node.type === "containerDirective"
+      ) {
+        if (node.type === "leafDirective") {
+          if (node.name !== "youtube") return;
 
-- :point_up: 
-- :wink: 
-- :) 
-- :( 
-`;
+          const data = node.data || (node.data = {});
+          const attributes = node.attributes || {};
+          const id = attributes.id;
+
+          if (node.type === "textDirective") return;
+          if (!id) return;
+
+          data.hName = "iframe";
+          data.hProperties = {
+            id: id,
+          };
+        }
+      }
+    });
+  };
+}
+
+const uuid = "vomthe_id";
 
 const Home: NextPage = () => {
-  const [value, setValue] = useState<string | undefined>(
-    typeof window !== "undefined" ? localStorage.getItem("md") ?? md : md
-  );
-
-  const [cleanHtml, setCleanHtml] = useState("");
-
-  const [formattedHtml, setFormattedHtml] = useState("");
+  const [value, setValue] = useState<string | undefined>(md);
 
   const [showHtml, setShowHtml] = useState(false);
 
@@ -78,55 +99,34 @@ const Home: NextPage = () => {
   const toast = useToast();
 
   useEffect(() => {
-    if (!value) {
-      setCleanHtml("");
-      setFormattedHtml("");
-      localStorage.removeItem("md");
+    if (localStorage.getItem(uuid)) {
+      setValue(localStorage.getItem(uuid) as string);
     }
+  }, []);
 
-    const dirtyHtml =
-      document.querySelector(".markdown")?.innerHTML.toString() || "";
-    setCleanHtml(
-      DOMPurify.sanitize(dirtyHtml, {
-        USE_PROFILES: { html: true },
-        ADD_TAGS: ["iframe"],
-        ADD_ATTR: [
-          "target",
-          "allow",
-          "allowfullscreen",
-          "frameborder",
-          "scrolling",
-          "title",
-          "aria-hidden",
-          "srcDoc",
-        ],
-      })
-    );
-
-    const dirtyFormattedHtml =
-      document.querySelector(".html")?.innerHTML.toString() || "";
-    setFormattedHtml(
-      DOMPurify.sanitize(dirtyFormattedHtml, {
-        USE_PROFILES: { html: true },
-        ADD_TAGS: ["iframe"],
-        ADD_ATTR: [
-          "target",
-          "allow",
-          "allowfullscreen",
-          "frameborder",
-          "scrolling",
-          "title",
-          "aria-hidden",
-          "srcDoc",
-        ],
-      })
-    );
-
-    return () => {
-      setCleanHtml("");
-      setFormattedHtml("");
-    };
+  useEffect(() => {
+    if (!value) {
+      localStorage.removeItem(uuid);
+    }
   }, [value, noListStyle]);
+
+  const renderComponentToString = (elem: ReactElement) => {
+    const dirtyHtml = renderToString(elem);
+    return DOMPurify.sanitize(dirtyHtml, {
+      USE_PROFILES: { html: true },
+      ADD_TAGS: ["iframe"],
+      ADD_ATTR: [
+        "target",
+        "allow",
+        "allowfullscreen",
+        "frameborder",
+        "scrolling",
+        "title",
+        "aria-hidden",
+        "srcDoc",
+      ],
+    });
+  };
 
   const markDownComponent: any = {
     a: ({ ...props }) => (
@@ -178,7 +178,7 @@ const Home: NextPage = () => {
     th: ({ ...props }: any) => <Th {...props} />,
     thead: ({ ...props }) => <Thead {...props} />,
     tr: ({ ...props }) => <Tr {...props} />,
-    "youtube-video": ({ ...props }) => (
+    iframe: ({ ...props }) => (
       <AspectRatio ratio={16 / 9}>
         <Box
           as={"iframe"}
@@ -215,7 +215,7 @@ const Home: NextPage = () => {
         {...props}
       />
     ),
-    "youtube-video": ({ ...props }) => (
+    iframe: ({ ...props }) => (
       <div
         style={{ position: "relative", width: "100%", paddingBottom: "56.25%" }}
       >
@@ -241,14 +241,14 @@ const Home: NextPage = () => {
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
-    localStorage.setItem("md", e.target.value);
+    localStorage.setItem(uuid, e.target.value);
   };
 
-  const copyToClipboard = (html: string) => {
+  const copyToClipboard = (html: string, isHtml: boolean) => {
     navigator.clipboard.writeText(html);
     toast({
       title: "Success",
-      description: "Html copied succesfully!",
+      description: `${isHtml ? "HTML" : "Markdown"} copied succesfully!`,
       status: "success",
       duration: 5000,
     });
@@ -256,36 +256,11 @@ const Home: NextPage = () => {
 
   return (
     <Box bg="gray.100">
-      <VisuallyHidden>
-        <Box>
-          <ReactMarkdown
-            remarkPlugins={[
-              remarkGfm,
-              [emoji, { padSpaceAfter: true }],
-              remarkDirectiveRehype,
-              remarkDirective,
-            ]}
-            className="markdown"
-            components={markDownComponent}
-          >
-            {value as string}
-          </ReactMarkdown>
-        </Box>
-        <Box>
-          <ReactMarkdown
-            remarkPlugins={[
-              remarkGfm,
-              [emoji, { padSpaceAfter: true }],
-              remarkDirectiveRehype,
-              remarkDirective,
-            ]}
-            className="html"
-            components={htmlComponent}
-          >
-            {value as string}
-          </ReactMarkdown>
-        </Box>
-      </VisuallyHidden>
+      <Head>
+        <title>Very Opinionated Markdown To HTML | Kyle</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Grid
         h="100vh"
         padding={5}
@@ -294,67 +269,171 @@ const Home: NextPage = () => {
         gridGap={5}
         overflowY={"auto"}
       >
-        <Box>
+        <Flex flexDir={"column"} minH="full">
+          <Flex justifyContent="space-between" my={2}>
+            <Heading fontSize={"2xl"}>Markdown Input</Heading>
+            <Flex alignItems={"center"}>
+              <Tooltip hasArrow label="Click to copy Markdown">
+                <IconButton
+                  size="xs"
+                  variant="outline"
+                  colorScheme={"blue"}
+                  mr={2}
+                  aria-label="copy"
+                  icon={<CopyIcon />}
+                  disabled={!value}
+                  onClick={() => copyToClipboard(value ?? "", false)}
+                />
+              </Tooltip>
+              <Tooltip hasArrow label="Click to delete all Markdowns">
+                <IconButton
+                  size="xs"
+                  variant="outline"
+                  colorScheme={"red"}
+                  mr={2}
+                  aria-label="delete"
+                  icon={<DeleteIcon />}
+                  disabled={!value}
+                  onClick={() => setValue("")}
+                />
+              </Tooltip>
+            </Flex>
+          </Flex>
           <Textarea
             value={value}
             onChange={handleChange}
-            h="100%"
+            h="full"
             bg="white"
             shadow="md"
             p={5}
             resize={"none"}
             border={"none"}
           />
-        </Box>
-        <Box bg="white" shadow="md" rounded="md" p={5} overflowY="auto">
-          <Flex justifyContent="space-between">
-            <Heading>Results:</Heading>
-            <Flex>
-              <Button
-                variant={"outline"}
-                colorScheme={"blue"}
-                onClick={() => setShowHtml(!showHtml)}
-                mr={2}
+        </Flex>
+        <Flex flexDir={"column"} h="full" overflowY={"auto"}>
+          <Flex justifyContent="space-between" my={2}>
+            <Heading fontSize={"2xl"}>
+              {showHtml ? "HTML Code" : "Live Preview"}
+            </Heading>
+            <Flex alignItems={"center"}>
+              <Tooltip
+                hasArrow
+                label={
+                  showHtml
+                    ? "Click to see live preview"
+                    : "Click to see HTML code view"
+                }
               >
-                {showHtml ? "Live" : "Code"}
-              </Button>
-              <Button
-                variant={"outline"}
-                colorScheme={"blue"}
-                onClick={() => setNoListStyle(!noListStyle)}
-                mr={2}
+                <Button
+                  variant={"outline"}
+                  colorScheme={"blue"}
+                  onClick={() => setShowHtml(!showHtml)}
+                  mr={2}
+                  size={"xs"}
+                >
+                  {showHtml ? "Live" : "Code"}
+                </Button>
+              </Tooltip>
+              <Tooltip
+                hasArrow
+                label={
+                  noListStyle
+                    ? "Click to show bullets"
+                    : "Click to unshow bullets"
+                }
               >
-                {noListStyle ? "✅ ∙" : "❎ ∙"}
-              </Button>
-              <IconButton
-                variant="outline"
-                colorScheme={"blue"}
-                mr={2}
-                aria-label="copy"
-                icon={<CopyIcon />}
-                disabled={!showHtml}
-                onClick={() => copyToClipboard(formattedHtml)}
-              />
-              <IconButton
-                variant="outline"
-                colorScheme={"blue"}
-                aria-label="help"
-                icon={<QuestionIcon />}
-                onClick={onOpen}
-              />
+                <Button
+                  variant={"outline"}
+                  colorScheme={"blue"}
+                  onClick={() => setNoListStyle(!noListStyle)}
+                  mr={2}
+                  size="xs"
+                >
+                  {noListStyle ? "✅ ∙" : "❎ ∙"}
+                </Button>
+              </Tooltip>
+              <Tooltip hasArrow label="Click to copy HTML">
+                <IconButton
+                  size="xs"
+                  variant="outline"
+                  colorScheme={"blue"}
+                  mr={2}
+                  aria-label="copy"
+                  icon={<CopyIcon />}
+                  disabled={!showHtml}
+                  onClick={() =>
+                    copyToClipboard(
+                      renderComponentToString(
+                        <ReactMarkdown
+                          remarkPlugins={[
+                            remarkGfm,
+                            [emoji, { padSpaceAfter: true }],
+                            remarkDirective,
+                            myRemarkPlugin,
+                          ]}
+                          components={htmlComponent}
+                        >
+                          {value as string}
+                        </ReactMarkdown>
+                      ),
+                      true
+                    )
+                  }
+                />
+              </Tooltip>
+              <Tooltip hasArrow label="Help with markdown syntax">
+                <IconButton
+                  size="xs"
+                  variant="outline"
+                  colorScheme={"blue"}
+                  aria-label="help"
+                  icon={<QuestionIcon />}
+                  onClick={onOpen}
+                />
+              </Tooltip>
             </Flex>
           </Flex>
-          <Divider my={2} />
-          <Box>
-            {showHtml ? (
-              <SyntaxHighlighter wrapLines wrapLongLines language="html">
-                {formattedHtml}
-              </SyntaxHighlighter>
-            ) : (
-              parse(cleanHtml)
-            )}
+          <Box
+            bg="white"
+            shadow="md"
+            rounded="md"
+            p={5}
+            overflowY="auto"
+            h="full"
+          >
+            <Box>
+              {showHtml ? (
+                <SyntaxHighlighter wrapLines wrapLongLines language="html">
+                  {renderComponentToString(
+                    <ReactMarkdown
+                      remarkPlugins={[
+                        remarkGfm,
+                        [emoji, { padSpaceAfter: true }],
+                        remarkDirective,
+                        myRemarkPlugin,
+                      ]}
+                      components={htmlComponent}
+                    >
+                      {value as string}
+                    </ReactMarkdown>
+                  )}
+                </SyntaxHighlighter>
+              ) : (
+                <ReactMarkdown
+                  remarkPlugins={[
+                    remarkGfm,
+                    [emoji, { padSpaceAfter: true }],
+                    remarkDirective,
+                    myRemarkPlugin,
+                  ]}
+                  components={markDownComponent}
+                >
+                  {value as string}
+                </ReactMarkdown>
+              )}
+            </Box>
           </Box>
-        </Box>
+        </Flex>
       </Grid>
       <Modal
         isOpen={isOpen}
@@ -490,7 +569,7 @@ const Home: NextPage = () => {
                   <Td>
                     <Flex flexDir={"column"} experimental_spaceY={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
-                        {"::youtube-video[Name]{#ID}"}
+                        {"::youtube[Name]{#ID}"}
                       </Code>
                     </Flex>
                   </Td>

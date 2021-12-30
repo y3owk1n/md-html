@@ -141,6 +141,7 @@ const Home: NextPage = () => {
     h1: ({ ...props }) => <Heading as={"h1"} size="xl" {...props} my={2} />,
     h2: ({ ...props }) => <Heading as={"h2"} size="lg" {...props} my={2} />,
     h3: ({ ...props }) => <Heading as={"h3"} size="md" {...props} my={2} />,
+    h4: ({ ...props }) => <Heading as={"h4"} size="md" {...props} my={2} />,
     p: ({ ...props }) => <Text {...props} my={2} />,
     li: ({ ...props }) => <ListItem {...props} />,
     ol: ({ ...props }) => (

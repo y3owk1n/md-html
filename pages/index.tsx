@@ -150,7 +150,6 @@ const Home: NextPage = () => {
         listStyleType={noListStyle ? "none" : undefined}
         marginLeft={noListStyle ? 0 : undefined}
         {...props}
-        my={2}
       />
     ),
     ul: ({ ...props }) => (
@@ -158,7 +157,6 @@ const Home: NextPage = () => {
         listStyleType={noListStyle ? "none" : undefined}
         marginLeft={noListStyle ? 0 : undefined}
         {...props}
-        my={2}
       />
     ),
     code: ({ ...props }) => (

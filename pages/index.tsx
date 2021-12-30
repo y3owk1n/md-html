@@ -42,6 +42,7 @@ import { renderToString } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import rehypeFormat from "rehype-format";
 import remarkDirective from "remark-directive";
 import emoji from "remark-emoji";
 import remarkGfm from "remark-gfm";
@@ -378,6 +379,7 @@ const Home: NextPage = () => {
                             remarkDirective,
                             myRemarkPlugin,
                           ]}
+                          rehypePlugins={[rehypeFormat]}
                           components={htmlComponent}
                         >
                           {value as string}
@@ -419,6 +421,7 @@ const Home: NextPage = () => {
                         remarkDirective,
                         myRemarkPlugin,
                       ]}
+                      rehypePlugins={[rehypeFormat]}
                       components={htmlComponent}
                     >
                       {value as string}

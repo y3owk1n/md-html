@@ -65,6 +65,12 @@ function myRemarkPlugin() {
         node.type === "leafDirective" ||
         node.type === "containerDirective"
       ) {
+        if (node.type === "textDirective") {
+          if (node.name !== "br") return;
+
+          const data = node.data || (node.data = {});
+          data.hName = "br";
+        }
         if (node.type === "leafDirective") {
           if (node.name !== "youtube") return;
 
@@ -139,6 +145,7 @@ const Home: NextPage = () => {
     li: ({ ...props }) => <ListItem {...props} />,
     ol: ({ ...props }) => (
       <OrderedList
+        ordered="true"
         listStyleType={noListStyle ? "none" : undefined}
         marginLeft={noListStyle ? 0 : undefined}
         {...props}
@@ -156,6 +163,7 @@ const Home: NextPage = () => {
     code: ({ ...props }) => (
       <Code
         {...props}
+        inline={props.inline.toString()}
         w={props.inline ? "unset" : "full"}
         py={props.inline ? 0 : 2}
         px={1}
@@ -505,7 +513,7 @@ const Home: NextPage = () => {
                   <Td>
                     <Flex flexDir={"column"} experimental_spaceY={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
-                        Add 2 space after the line to create a break
+                        :br
                       </Code>
                     </Flex>
                   </Td>

@@ -501,6 +501,16 @@ const Home: NextPage = () => {
                   </Td>
                 </Tr>
                 <Tr>
+                  <Td verticalAlign={"top"}>Linebreak</Td>
+                  <Td>
+                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                      <Code colorScheme={"red"} maxW={"fit-content"}>
+                        Add 2 space after the line to create a break
+                      </Code>
+                    </Flex>
+                  </Td>
+                </Tr>
+                <Tr>
                   <Td verticalAlign={"top"}>Ordered List</Td>
                   <Td>
                     <Flex flexDir={"column"} experimental_spaceY={2}>

@@ -210,7 +210,7 @@ const Home: NextPage = () => {
       />
     ),
     ol: ({ ...props }) => (
-      <ul
+      <ol
         style={noListStyle ? { listStyle: "none", marginLeft: 0 } : undefined}
         {...props}
       />

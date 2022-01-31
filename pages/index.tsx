@@ -163,7 +163,7 @@ const Home: NextPage = () => {
     code: ({ ...props }) => (
       <Code
         {...props}
-        inline={props.inline.toString()}
+        inline={props.inline ? props.inline.toString() : undefined}
         w={props.inline ? "unset" : "full"}
         py={props.inline ? 0 : 2}
         px={1}

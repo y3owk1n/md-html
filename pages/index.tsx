@@ -147,7 +147,6 @@ const Home: NextPage = () => {
     li: ({ ...props }) => <ListItem {...props} />,
     ol: ({ ...props }) => (
       <OrderedList
-        ordered="true"
         listStyleType={noListStyle ? "none" : undefined}
         marginLeft={noListStyle ? 0 : undefined}
         {...props}
@@ -163,7 +162,6 @@ const Home: NextPage = () => {
     code: ({ ...props }) => (
       <Code
         {...props}
-        inline={props.inline.toString()}
         w={props.inline ? "unset" : "full"}
         py={props.inline ? 0 : 2}
         px={1}
@@ -276,6 +274,7 @@ const Home: NextPage = () => {
         templateRows={["repeat(2, 1fr)", null, "repeat(1, 1fr)"]}
         gridGap={5}
         overflowY={"auto"}
+        color="black"
       >
         <Flex flexDir={"column"} minH="full">
           <Flex justifyContent="space-between" my={2}>

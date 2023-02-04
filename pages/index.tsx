@@ -411,6 +411,7 @@ const Home: NextPage = () => {
           >
             <Box>
               {showHtml ? (
+                // @ts-ignore
                 <SyntaxHighlighter wrapLines wrapLongLines language="html">
                   {renderComponentToString(
                     <ReactMarkdown

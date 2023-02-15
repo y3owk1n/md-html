@@ -467,7 +467,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Heading</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         # H1
                       </Code>
@@ -483,7 +483,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Bold</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         **bold text**
                       </Code>
@@ -493,7 +493,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Italic</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         *italic text*
                       </Code>
@@ -503,7 +503,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Strikethrough</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         ~strikethrough~
                       </Code>
@@ -513,7 +513,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Linebreak</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         :br
                       </Code>
@@ -523,7 +523,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Ordered List</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         1. First item
                       </Code>
@@ -539,7 +539,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Unordered List</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         - First item
                       </Code>
@@ -555,7 +555,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Horizontal Rule</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         ---
                       </Code>
@@ -565,7 +565,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Link</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         [title](https://www.example.com)
                       </Code>
@@ -575,7 +575,7 @@ const Home: NextPage = () => {
                 <Tr>
                   <Td verticalAlign={"top"}>Image</Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         ![alt text](image.jpg)
                       </Code>
@@ -587,7 +587,7 @@ const Home: NextPage = () => {
                     YouTube Video <Badge colorScheme={"blue"}>New</Badge>
                   </Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         {"::youtube[Name]{#ID}"}
                       </Code>
@@ -599,7 +599,7 @@ const Home: NextPage = () => {
                     Emoji <Badge colorScheme={"blue"}>New</Badge>
                   </Td>
                   <Td>
-                    <Flex flexDir={"column"} experimental_spaceY={2}>
+                    <Flex flexDir={"column"} gap={2}>
                       <Code colorScheme={"red"} maxW={"fit-content"}>
                         :wink:
                       </Code>
